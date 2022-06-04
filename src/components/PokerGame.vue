@@ -37,7 +37,7 @@ export default {
     }
   },
   created() {
-    this.socket = io("http://server.napp.verdanditeam.com");
+    this.socket = io("https://server.napp.verdanditeam.com");
     this.socket.on("newPlayer", data => {
       console.log(data + " joined!");
       if (!this.players.find(el => el.name === data.name)) {
