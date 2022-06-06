@@ -1,10 +1,12 @@
 <template>
   <div class="container">
     <div class="row my-5">
-      <div class="col-1 mx-auto">
+      <div class="col-6 text-center">
         <button v-if="!this.name" @click="this.join" type="button" class="btn btn-primary">Join</button>
         <button v-else-if="this.vote === 0" @click="this.sendVote" type="button" class="btn btn-primary">Vote</button>
-        <button v-else-if="this.showVote" @click="this.reset" type="button" class="btn btn-primary">Reset</button>
+      </div>
+      <div class="col-6 text-center">
+        <button @click="this.reset" type="button" class="btn btn-primary">Reset</button>
       </div>
     </div>
     <div class="row my-5" v-if="this.name !== ''">
