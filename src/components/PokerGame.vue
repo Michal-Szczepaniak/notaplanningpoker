@@ -77,7 +77,11 @@ export default {
 
       let median = [];
       this.players.forEach(el => { median.push(el.vote) });
-      median.sort()
+      median.sort((a,b) => {
+        if (a > b) return 1;
+        if (a < b) return -1;
+        return 0;
+      });
       this.median = median[Math.floor((median.length-1)/2)];
     });
     this.socket.on("reset", data => {
