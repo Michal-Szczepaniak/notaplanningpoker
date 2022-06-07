@@ -1,24 +1,36 @@
 <template>
   <div class="container">
     <div class="row my-5">
-      <div class="col-6 text-center">
-        <button v-if="!this.name" @click="this.join" type="button" class="btn btn-primary">Join</button>
-        <button v-else-if="this.vote === 0" @click="this.sendVote" type="button" class="btn btn-primary">Vote</button>
-      </div>
-      <div class="col-6 text-center">
+      <div class="col-12 text-center">
+        <button v-if="!this.name" @click="this.join" type="button" class="btn btn-primary mx-5">Join</button>
         <button @click="this.reset" type="button" class="btn btn-primary">Reset</button>
       </div>
     </div>
+    <div v-if="this.name && this.vote === 0" class="row my-5">
+      <div class="col-2"></div>
+      <div class="col-1"><button @click="this.sendVote(0.5)" type="button" class="btn btn-primary">0.5</button></div>
+      <div class="col-1"><button @click="this.sendVote(1)" type="button" class="btn btn-primary">1</button></div>
+      <div class="col-1"><button @click="this.sendVote(2)" type="button" class="btn btn-primary">2</button></div>
+      <div class="col-1"><button @click="this.sendVote(3)" type="button" class="btn btn-primary">3</button></div>
+      <div class="col-1"><button @click="this.sendVote(5)" type="button" class="btn btn-primary">5</button></div>
+      <div class="col-1"><button @click="this.sendVote(8)" type="button" class="btn btn-primary">8</button></div>
+      <div class="col-1"><button @click="this.sendVote(13)" type="button" class="btn btn-primary">13</button></div>
+      <div class="col-1"><button @click="this.sendVote(20)" type="button" class="btn btn-primary">20</button></div>
+    </div>
     <div class="row my-5" v-if="this.name !== ''">
-      <div class="col-6"><h1>Player: {{ this.name }}</h1></div>
-      <div class="col-6"><h1>Vote: {{ this.vote }}</h1></div>
+      <div class="col-6"><h2>Player: {{ this.name }}</h2></div>
+      <div class="col-6"><h2>Vote: {{ this.vote }}</h2></div>
+    </div>
+    <div class="row my-5" v-if="this.showVote">
+      <div class="col-6"><h2>Average: {{ this.average }}</h2></div>
+      <div class="col-6"><h2>Median: {{ this.median }}</h2></div>
     </div>
     <div class="row">
       <h2>Players:</h2>
     </div>
     <div class="row">
       <div v-for="player in players" :key="player.name" class="col-2 border mx-1">
-        <p class="text-center">Player: {{ player.name }}</p>
+        <p class="text-center my-3">Player: {{ player.name }}</p>
         <p v-if="!this.showVote" class="text-center">Voted: {{ player.vote === 0 ? "no" : "yes" }}</p>
         <p v-else class="text-center">Vote: {{ player.vote }}</p>
       </div>
@@ -35,7 +47,9 @@ export default {
       name: '',
       vote: 0,
       showVote: false,
-      players: []
+      players: [],
+      average: 0,
+      median: 0
     }
   },
   created() {
@@ -56,6 +70,15 @@ export default {
     this.socket.on("reveal", data => {
       this.players = data;
       this.showVote = true;
+
+      let avg = 0;
+      this.players.forEach(el => { avg += el.vote });
+      this.average = Math.round((avg/this.players.length)*10)/10;
+
+      let median = [];
+      this.players.forEach(el => { median.push(el.vote) });
+      median.sort()
+      this.median = median[Math.floor((median.length-1)/2)];
     });
     this.socket.on("reset", data => {
       this.players = data;
@@ -86,8 +109,7 @@ export default {
         this.socket.emit("join", name);
       }
     },
-    sendVote() {
-      let vote = parseInt(prompt('Vote'));
+    sendVote(vote) {
       if (vote !== 0 && !isNaN(vote)) {
         this.vote = vote;
         this.socket.emit("vote", { name: this.name, vote: vote });
