@@ -82,7 +82,12 @@ export default {
         if (a < b) return -1;
         return 0;
       });
-      this.median = median[Math.floor((median.length-1)/2)];
+      let center = (median.length-1)/2;
+      if (center % 1 !== 0) {
+        this.median = Math.floor(((median[Math.floor(center)] + median[Math.ceil(center)])/2)*10)/10;
+      } else {
+        this.median = median[center];
+      }
     });
     this.socket.on("reset", data => {
       this.players = data;
