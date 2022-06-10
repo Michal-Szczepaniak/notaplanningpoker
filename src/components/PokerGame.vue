@@ -2,11 +2,12 @@
   <div class="container">
     <div class="row my-5">
       <div class="col-12 text-center">
-        <button v-if="!this.name" @click="this.join" type="button" class="btn btn-primary mx-5">Join</button>
+        <button v-if="!this.joined" @click="this.join" type="button" class="btn btn-primary mx-5">Join</button>
+        <button v-if="this.joined" @click="this.leave" type="button" class="btn btn-primary mx-5">Leave</button>
         <button @click="this.reset" type="button" class="btn btn-primary">Reset</button>
       </div>
     </div>
-    <div v-if="this.name && this.vote === 0" class="row my-5">
+    <div v-if="this.joined && this.vote === 0" class="row my-5">
       <div class="col-2"></div>
       <div class="col-1"><button @click="this.sendVote(1)" type="button" class="btn btn-primary">1</button></div>
       <div class="col-1"><button @click="this.sendVote(2)" type="button" class="btn btn-primary">2</button></div>
@@ -19,7 +20,7 @@
       <div class="col-1"><button @click="this.sendVote(9)" type="button" class="btn btn-primary">9</button></div>
       <div class="col-1"><button @click="this.sendVote(10)" type="button" class="btn btn-primary">10</button></div>
     </div>
-    <div v-if="this.name && this.vote === 0" class="row my-5">
+    <div v-if="this.joined && this.vote === 0" class="row my-5">
       <div class="col-2"></div>
       <div class="col-1"><button @click="this.sendVote(0.5)" type="button" class="btn btn-primary">0.5</button></div>
       <div class="col-1"><button @click="this.sendVote(1)" type="button" class="btn btn-primary">1</button></div>
@@ -62,15 +63,22 @@ export default {
       showVote: false,
       players: [],
       average: 0,
-      median: 0
+      median: 0,
+      joined: false
     }
   },
   created() {
-    this.socket = io("https://server.napp.verdanditeam.com");
-    this.socket.on("newPlayer", data => {
+    this.socket = io("http://localhost:3001");
+    this.socket.on("playerJoined", data => {
       console.log(data + " joined!");
       if (!this.players.find(el => el.name === data.name)) {
         this.players.push(data);
+      }
+    });
+    this.socket.on("playerLeft", data => {
+      let index = this.players.findIndex(el => el.name === data);
+      if (index !== -1) {
+        this.players.splice(index, 1);
       }
     });
     this.socket.on("players", data => {
@@ -115,21 +123,35 @@ export default {
     if (localStorage.name) {
       this.name = localStorage.name;
       this.players.push(this.name)
+      this.joined = true;
       this.socket.emit("join", this.name);
     }
   },
   watch: {
     name(newName) {
       localStorage.name = newName;
+    },
+    players(newPlayers) {
+      this.joined = newPlayers.find(el => el.name === this.name);
     }
   },
   methods: {
     join() {
-      let name = prompt('Input name');
+      let name = null;
+      if (this.name !== '') {
+        name = this.name;
+      } else {
+        name = prompt('Input name');
+      }
       if (name !== null) {
         this.name = name;
+        this.joined = true;
         this.socket.emit("join", name);
       }
+    },
+    leave() {
+      this.joined = false;
+      this.socket.emit("leave", this.name);
     },
     sendVote(vote) {
       if (vote !== 0 && !isNaN(vote)) {
