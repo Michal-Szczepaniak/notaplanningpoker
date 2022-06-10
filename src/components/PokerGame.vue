@@ -8,6 +8,20 @@
     </div>
     <div v-if="this.name && this.vote === 0" class="row my-5">
       <div class="col-2"></div>
+      <div class="col-1"><button @click="this.sendVote(0)" type="button" class="btn btn-primary">0</button></div>
+      <div class="col-1"><button @click="this.sendVote(1)" type="button" class="btn btn-primary">1</button></div>
+      <div class="col-1"><button @click="this.sendVote(2)" type="button" class="btn btn-primary">2</button></div>
+      <div class="col-1"><button @click="this.sendVote(3)" type="button" class="btn btn-primary">3</button></div>
+      <div class="col-1"><button @click="this.sendVote(4)" type="button" class="btn btn-primary">4</button></div>
+      <div class="col-1"><button @click="this.sendVote(5)" type="button" class="btn btn-primary">5</button></div>
+      <div class="col-1"><button @click="this.sendVote(6)" type="button" class="btn btn-primary">6</button></div>
+      <div class="col-1"><button @click="this.sendVote(7)" type="button" class="btn btn-primary">7</button></div>
+      <div class="col-1"><button @click="this.sendVote(8)" type="button" class="btn btn-primary">8</button></div>
+      <div class="col-1"><button @click="this.sendVote(9)" type="button" class="btn btn-primary">9</button></div>
+      <div class="col-1"><button @click="this.sendVote(10)" type="button" class="btn btn-primary">10</button></div>
+    </div>
+    <div v-if="this.name && this.vote === 0" class="row my-5">
+      <div class="col-2"></div>
       <div class="col-1"><button @click="this.sendVote(0.5)" type="button" class="btn btn-primary">0.5</button></div>
       <div class="col-1"><button @click="this.sendVote(1)" type="button" class="btn btn-primary">1</button></div>
       <div class="col-1"><button @click="this.sendVote(2)" type="button" class="btn btn-primary">2</button></div>
